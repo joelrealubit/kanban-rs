@@ -1,25 +1,53 @@
-# Kanban Project Manager
+# Gather
 
-## Instructions
+A minimal Kanban workspace built with Dioxus and Rust. The web, desktop, and Android clients share a SQLite-backed Rust API. New accounts start with one sample board and five columns.
 
-This is a skeleton project to be the basis for your Kanban project for Week 1 of the Complete AI Coder Course. See the course resources for more.
+## Run locally
 
-You should clone this repo within your projects directory with:
+Install the Dioxus CLI 0.7.10 and build the web client:
 
-`git clone https://github.com/ed-donner/kanban.git`
+```sh
+cargo install dioxus-cli --version 0.7.10 --locked
+dx build --platform web --release
+```
 
-And then refine the AGENTS.md before using in your Coding Agent of choice.
+Run the app server:
 
-If you don't have git installed, you can [install it here](https://git-scm.com/install/) and you might need to reboot afterwards.
+```sh
+cargo run --no-default-features --features server --bin kanban-server
+```
 
-## Contributing your AGENTS.md
+Open <http://127.0.0.1:8080>. The SQLite database is created at `data/kanban.db`.
 
-If you have suggested AGENTS.md changes that have worked well for you, please contribute them to benefit other students! Follow the instructions linked [here](https://edwarddonner.com/pr) to raise a PR to put it in community_contributions. Name your file something like ED_DONNER_AGENTS.md but with your name..
+The server reads the built frontend from `target/dx/kanban/release/web/public`. Set `KANBAN_WEB_DIR` to use another build directory.
 
-I can't wait to see your changes.
+To run a native client against the API, build it with `KANBAN_API_URL` set to the server's origin. Android devices and emulators need an address they can reach.
 
-## Posting your app
+Set `KANBAN_COOKIE_SECURE=true` when serving over HTTPS.
 
-When you've successfully built a Kanban app, if you'd like to post about it on LinkedIn and tag me, then I'll weigh in to amplify your success and draw more attention to your achievements.
+## Android
 
-If you see other students doing this, please weigh in yourself to add your support and encouragement. It's so helpful for the community if we support each other.
+Install the Android SDK platform tools, Android platform/build tools, NDK, CMake, JDK 21, and the Rust target:
+
+```sh
+rustup target add aarch64-linux-android
+```
+
+Set `JAVA_HOME`, `ANDROID_HOME`, and `ANDROID_NDK_HOME` to the installed toolchain paths. For a USB-connected device with USB debugging enabled, `adb reverse` lets the app use the host's loopback API without exposing the server to the network. Start the server, connect and authorize the device, then run:
+
+```sh
+adb reverse tcp:18080 tcp:8080
+KANBAN_API_URL=http://127.0.0.1:18080 dx build --platform android --target aarch64-linux-android --release
+adb install -r target/dx/kanban/release/android/app/app/build/outputs/apk/debug/app-debug.apk
+adb shell monkey -p com.joelrealubit.gather -c android.intent.category.LAUNCHER 1
+```
+
+Keep the USB/ADB connection and reverse mapping active while testing. This local HTTP setup is for development; builds intended for other networks need an HTTPS API origin reachable by the device. Android builds require `KANBAN_API_URL`.
+
+## Check
+
+```sh
+cargo fmt --check
+cargo test --no-default-features --features server
+cargo clippy --no-default-features --features server --all-targets -- -D warnings
+```

@@ -1,0 +1,14 @@
+[application]
+name = "kanban"
+default_platform = "web"
+asset_dir = "assets"
+
+[web.app]
+title = "Gather"
+
+[web.watcher]
+reload_html = true
+watch_path = ["src", "assets"]
+
+[bundle]
+identifier = "com.joelrealubit.gather"

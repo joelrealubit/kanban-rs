@@ -3,21 +3,21 @@
 ## Business Requirements
 
 - An MVP of a Kanban style Project Management application as a web app  
-- The web app should only have 1 board
-- The board has fixed 5 columns that can be renamed  
+- The web app can have many boards
+- Each board has fixed 5 columns that can be renamed  
 - Each card has a title and details only
 - Drag and drop interface to move cards between columns
 - Add a new card to a column; delete an existing card
 - No more functionality: no archive, no search/filter. Keep it simple.
-- The priority is a slick, professional, gorgeous UI/UX with very simple features
+- UI/UX must be slick, professional, gorgeous with very simple features
 - The app should open with dummy data populated for the single board
 
 ## Technical Details
 
-- Implemented as a modern NextJS app, client rendered
-- The NextJS app should be created in a subdirectory `frontend`
-- No persistence
-- No user management for the MVP
+- Implemented as a modern dioxus app, with web, desktop, and android apps from a single codebase
+- Be guided by the dioxus guidelines here https://github.com/DioxusLabs/dioxus/blob/main/AGENTS.md 
+- Persistence should use sqlite on the backend, accessed through rust code idiomatic of dioxus
+- Add user management
 - Use popular libraries
 - As simple as possible but with an elegant UI
 
